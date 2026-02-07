@@ -1,9 +1,9 @@
 type ItemSuggestionProps = {
-    teste: string
+    title: string
 }
 
-export function ItemSuggestion({ teste }: ItemSuggestionProps) {
+export function ItemSuggestion({ title }: ItemSuggestionProps) {
     return (
-        <button>{ teste }</button>
+        <button>{title}</button>
     )
 }

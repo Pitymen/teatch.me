@@ -1,37 +1,43 @@
+import { useState } from "react"
 import { ItemSuggestion } from "./components/itemSuggestion"
 
+type ProgressType = "pending" | "started" | "done"
+
 function App() {
+  const [progress, setProgress] = useState<ProgressType>("pending")
+
   return (
     <div className="container">
       <div className="sidebar">
         <details open className="suggestion">
           <summary>Tópicos Sugeridos</summary>
-          <button>HTML</button>
-          <button>CSS</button>
-          <button>JavaScript</button>
-          <button>TypeScript</button>
-          <ItemSuggestion teste="Cubos Academy"/>
-          <ItemSuggestion teste="Pietro"/>
+          <ItemSuggestion title="HTML"/>
+          <ItemSuggestion title="CSS"/>
+          <ItemSuggestion title="JavaScript"/>
+          <ItemSuggestion title="TypeScript"/>
         </details>
 
         <details open className="historic">
           <summary>Histórico</summary>
-          <button>Java</button>
-          <button>PHP</button>
+          <ItemSuggestion title="Java"/>
+          <ItemSuggestion title="PHP"/>
         </details>
       </div>
 
       <div className="content">
+        {progress === "pending" && (
           <div className="box-home">
-          <span>Olá, eu sou o</span>
-          <h1>teach<span>.me</span></h1>
-          <p>
-            Estou aqui para te ajudar nos seus estudos.
-            Selecione um dos tópicos sugeridos ao lado
-            ou digite um tópico que deseja estudar para
-            começarmos
-          </p>
-        </div>
+            <span>Olá, eu sou o</span>
+            <h1>teach<span>.me</span></h1>
+            <p>
+              Estou aqui para te ajudar nos seus estudos.
+              Selecione um dos tópicos sugeridos ao lado
+              ou digite um tópico que deseja estudar para
+              começarmos
+            </p>
+          </div>
+
+        )}
 
         <div className="box-input">
           <textarea placeholder="Insira o tema que deseja estudar..."></textarea>
