@@ -10,7 +10,7 @@ function App() {
           <button>CSS</button>
           <button>JavaScript</button>
           <button>TypeScript</button>
-          <ItemSuggestion teste="Anna"/>
+          <ItemSuggestion teste="Cubos Academy"/>
           <ItemSuggestion teste="Pietro"/>
         </details>
 
