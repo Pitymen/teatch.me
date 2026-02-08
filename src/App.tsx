@@ -6,6 +6,12 @@ type ProgressType = "pending" | "started" | "done"
 function App() {
   const [progress, setProgress] = useState<ProgressType>("pending")
 
+  function handleSubmitChat() {
+    if (progress === "pending") {
+      setProgress("started")
+    }
+  }
+
   return (
     <div className="container">
       <div className="sidebar">
@@ -39,12 +45,8 @@ function App() {
 
         )}
 
-        <div className="box-input">
-          <textarea placeholder="Insira o tema que deseja estudar..."></textarea>
-          <button>Enviar pergunta</button>
-        </div>
-
-       {/* <div className="box-chat">
+        {progress !== "pending" && (
+        <div className="box-chat">
           <h1>Você está estudando sobre <span>HTML</span></h1>
 
           <div className="question">
@@ -82,16 +84,19 @@ function App() {
               adipisicing elit. Voluptas accusantium,
               aperiam nemo provident et dignissimos
               officiis id unde nulla nam tempora
-              saepe architecto repellendus obcaecati
-              fugiat, voluptates expedita rem soluta.
-              fkfksaldksaldkasçlfksaçlfkslaçdksçladk
-              kljfklfjskldjfkljsdklfjsdklfdlkdjfslj
+              saepe arc
             </p>
             <div className="actions">
               <button>Estudar novo tópico</button>
             </div>
           </div>
-        </div> */}
+        </div>
+        )}
+
+        <div className="box-input">
+          <textarea placeholder="Insira o tema que deseja estudar..."></textarea>
+          <button onClick={handleSubmitChat}>Enviar pergunta</button>
+        </div>
 
         <footer className="box-footer">
           <p>teach<span>.me</span></p>
