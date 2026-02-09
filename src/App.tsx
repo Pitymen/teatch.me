@@ -5,12 +5,24 @@ type ProgressType = "pending" | "started" | "done"
 
 function App() {
   const [progress, setProgress] = useState<ProgressType>("pending")
+  const [textarea, setTextarea] = useState<string>("")
+
+  const [chat, setChat] = useState<String[]>([])
 
   function handleSubmitChat() {
+    if (!textarea) {
+      return
+    }
+
     if (progress === "pending") {
+      setChat(text => [...text, textarea])
+      setChat(text => [...text, "Aqui será a pergunta feito por uma IA"])
+      
       setProgress("started")
     }
   }
+
+  console.log(chat)
 
   return (
     <div className="container">
@@ -42,62 +54,55 @@ function App() {
               começarmos
             </p>
           </div>
-
         )}
 
         {progress !== "pending" && (
         <div className="box-chat">
-          <h1>Você está estudando sobre <span>HTML</span></h1>
+          {chat[0] && (
+            <h1>Você está estudando sobre <span>{chat[0]}</span></h1>
+          )} 
 
-          <div className="question">
+          {chat[1] && (
+            <div className="question">
             <h2>Pergunta</h2>
             <p>
-              Claro! Aqui está a pergunta simulada:
-              "Como você descreveria o seu conhecimento
-              e experiência com HTML? Você poderia
-              fornecer um exemplo de um projeto em
-              que utilizou HTML e como isso impactou
-              positivamente o resultado final?
-              Aguardo a sua resposta para poder
-              fornecer feedback!
+              {chat[1]}
             </p>
           </div>
+          )}
 
-          <div className="answer">
+          {chat[2] && (
+            <div className="answer">
             <h2>Sua resposta</h2>
             <p>
-              Tenho um conhecimento sólido em HTML.
-              Já construi vários sites
+              {chat[2]}
             </p>
           </div>
+          )}
 
-          <div className="feedback">
+          {chat[3] && (
+            <div className="feedback">
             <h2>Feedback teach<span>.me</span></h2>
-            <p>
-              Lorem ipsum dolor sit amet consectetur
-              adipisicing elit. Repellat, error neque
-              debitis repellendus asperiores, placeat
-              temporibus, ducimus tempore eos iusto
-              totam adipisci veritatis maiores velit
-              soluta ipsum dolore quos vitae! Lorem
-              ipsum dolor sit amet consectetur
-              adipisicing elit. Voluptas accusantium,
-              aperiam nemo provident et dignissimos
-              officiis id unde nulla nam tempora
-              saepe arc
-            </p>
+            <p>{chat[3]}</p>
             <div className="actions">
               <button>Estudar novo tópico</button>
             </div>
           </div>
+          )}
         </div>
         )}
 
         <div className="box-input">
-          <textarea placeholder="Insira o tema que deseja estudar..."></textarea>
-          <button onClick={handleSubmitChat}>Enviar pergunta</button>
+          <textarea
+            value={textarea}
+            onChange={element => setTextarea(element.target.value)}
+            placeholder={
+              progress === "started" ? "Insira sua resposta" : "Insira o tema que deseja estudar..."
+            }
+          />
+          <button onClick={handleSubmitChat}>{progress === "pending" ? "Enviar perguta" : "Enviar Resposta"}</button>
         </div>
-
+      
         <footer className="box-footer">
           <p>teach<span>.me</span></p>
         </footer>
