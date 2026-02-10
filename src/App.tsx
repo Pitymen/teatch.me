@@ -6,7 +6,6 @@ type ProgressType = "pending" | "started" | "done"
 function App() {
   const [progress, setProgress] = useState<ProgressType>("pending")
   const [textarea, setTextarea] = useState<string>("")
-
   const [chat, setChat] = useState<String[]>([])
 
   function handleSubmitChat() {
@@ -14,12 +13,19 @@ function App() {
       return
     }
 
+    const message = textarea
+    setTextarea("")
+
     if (progress === "pending") {
       setChat(text => [...text, textarea])
       setChat(text => [...text, "Aqui será a pergunta feito por uma IA"])
       
       setProgress("started")
+      return
     }
+
+    setChat(text => [...text, message])
+    setChat(text => [...text, "Aqui será o feedback gerado por uma IA"])
   }
 
   console.log(chat)
