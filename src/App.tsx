@@ -8,6 +8,11 @@ function App() {
   const [textarea, setTextarea] = useState<string>("")
   const [chat, setChat] = useState<String[]>([])
 
+  function resetChat(){
+    setProgress("pending")
+    setChat([])
+  }
+
   function handleSubmitChat() {
     if (!textarea) {
       return
@@ -26,6 +31,8 @@ function App() {
 
     setChat(text => [...text, message])
     setChat(text => [...text, "Aqui será o feedback gerado por uma IA"])
+  
+    setProgress("done")
   }
 
   console.log(chat)
@@ -91,14 +98,15 @@ function App() {
             <h2>Feedback teach<span>.me</span></h2>
             <p>{chat[3]}</p>
             <div className="actions">
-              <button>Estudar novo tópico</button>
+              <button onClick={resetChat}>Estudar novo tópico</button>
             </div>
           </div>
           )}
         </div>
         )}
 
-        <div className="box-input">
+        {progress !== "done" && (
+          <div className="box-input">
           <textarea
             value={textarea}
             onChange={element => setTextarea(element.target.value)}
@@ -108,6 +116,7 @@ function App() {
           />
           <button onClick={handleSubmitChat}>{progress === "pending" ? "Enviar perguta" : "Enviar Resposta"}</button>
         </div>
+        )}
       
         <footer className="box-footer">
           <p>teach<span>.me</span></p>
