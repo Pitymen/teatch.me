@@ -1,20 +1,27 @@
 import { useState } from "react"
 import { ItemSuggestion } from "./components/itemSuggestion"
 import { getHistoric, setHistoric } from "./storage/historic"
+import { sendMessage } from "./api/openai"
 
 type ProgressType = "pending" | "started" | "done"
+
+type Message = {
+  role: "user" | "assistant"
+  content: string
+  subject?: string
+}
 
 function App() {
   const [progress, setProgress] = useState<ProgressType>("pending")
   const [textarea, setTextarea] = useState<string>("")
-  const [chat, setChat] = useState<String[]>([])
+  const [chat, setChat] = useState<Message[]>([])
 
-  function resetChat(){
+  function resetChat() {
     setProgress("pending")
     setChat([])
   }
 
-  function handleSubmitChat() {
+  async function handleSubmitChat() {
     if (!textarea) {
       return
     }
@@ -24,38 +31,62 @@ function App() {
 
     if (progress === "pending") {
       setHistoric(message)
-      setChat(text => [...text, message])
-      setChat(text => [...text, "Aqui será a pergunta feito por uma IA"])
-      
+
+      const prompt = `gere uma pergunta onde simule uma entrevista de 
+      emprego sobre ${message}, após gerar a pergunta, enviarei a resposta e 
+      você me dará um feedback. O feedback precisa ser simples e objetivo 
+      e corresponder fielmente a resposta enviada. Após o feedback não 
+      existirá mais interação.`
+
+      const messageGPT: Message = {
+        role: "user",
+        content: prompt,
+        subject: message
+      }
+
+      setChat(text => [...text, messageGPT])
+
+      const questionGPT = await sendMessage([messageGPT]) 
+
+      setChat(text => [...text, { role: "assistant", content: questionGPT.content}])
+
       setProgress("started")
       return
     }
 
-    setChat(text => [...text, message])
-    setChat(text => [...text, "Aqui será o feedback gerado por uma IA"])
-  
+    const responseUser: Message = {
+      role: "user",
+      content: message
+    }  
+
+    const feedbackGPT = await sendMessage([...chat, responseUser])
+
+    setChat(text => [...text, responseUser])
+
+    setChat(text => [...text, {role: "assistant", content: feedbackGPT.content }])
+
     setProgress("done")
   }
 
-
-  return (
+  
+  return (  
     <div className="container">
       <div className="sidebar">
         <details open className="suggestion">
           <summary>Tópicos Sugeridos</summary>
-          <ItemSuggestion title="HTML" onClick={() => setTextarea("HTML")}/>
-          <ItemSuggestion title="CSS" onClick={() => setTextarea("CSS")}/>
-          <ItemSuggestion title="JavaScript" onClick={() => setTextarea("JavaScript")}/>
-          <ItemSuggestion title="TypeScript" onClick={() => setTextarea("TypeScript")}/>
+          <ItemSuggestion title="HTML" onClick={() => setTextarea("HTML")} />
+          <ItemSuggestion title="CSS" onClick={() => setTextarea("CSS")} />
+          <ItemSuggestion title="JavaScript" onClick={() => setTextarea("JavaScript")} />
+          <ItemSuggestion title="TypeScript" onClick={() => setTextarea("TypeScript")} />
         </details>
 
         <details open className="historic">
           <summary>Histórico</summary>
-        {
-          getHistoric().map(item => (
-            <ItemSuggestion title={item} onClick={() => setTextarea(item)}/>
-          ))
-        }
+          {
+            getHistoric().map(item => (
+              <ItemSuggestion title={item} onClick={() => setTextarea(item)} />
+            ))
+          }
 
         </details>
       </div>
@@ -75,54 +106,54 @@ function App() {
         )}
 
         {progress !== "pending" && (
-        <div className="box-chat">
-          {chat[0] && (
-            <h1>Você está estudando sobre <span>{chat[0]}</span></h1>
-          )} 
+          <div className="box-chat">
+            {chat[0] && (
+              <h1>Você está estudando sobre <span>{chat[0].subject}</span></h1>
+            )}
 
-          {chat[1] && (
-            <div className="question">
-            <h2>Pergunta</h2>
-            <p>
-              {chat[1]}
-            </p>
-          </div>
-          )}
+            {chat[1] && (
+              <div className="question">
+                <h2>Pergunta</h2>
+                <p>
+                  {chat[1].content}
+                </p>
+              </div>
+            )}
 
-          {chat[2] && (
-            <div className="answer">
-            <h2>Sua resposta</h2>
-            <p>
-              {chat[2]}
-            </p>
-          </div>
-          )}
+            {chat[2] && (
+              <div className="answer">
+                <h2>Sua resposta</h2>
+                <p>
+                  {chat[2].content}
+                </p>
+              </div>
+            )}
 
-          {chat[3] && (
-            <div className="feedback">
-            <h2>Feedback teach<span>.me</span></h2>
-            <p>{chat[3]}</p>
-            <div className="actions">
-              <button onClick={resetChat}>Estudar novo tópico</button>
-            </div>
+            {chat[3] && (
+              <div className="feedback">
+                <h2>Feedback teach<span>.me</span></h2>
+                <p>{chat[3].content}</p>
+                <div className="actions">
+                  <button onClick={resetChat}>Estudar novo tópico</button>
+                </div>
+              </div>
+            )}
           </div>
-          )}
-        </div>
         )}
 
         {progress !== "done" && (
           <div className="box-input">
-          <textarea
-            value={textarea}
-            onChange={element => setTextarea(element.target.value)}
-            placeholder={
-              progress === "started" ? "Insira sua resposta" : "Insira o tema que deseja estudar..."
-            }
-          />
-          <button onClick={handleSubmitChat}>{progress === "pending" ? "Enviar perguta" : "Enviar Resposta"}</button>
-        </div>
+            <textarea
+              value={textarea}
+              onChange={element => setTextarea(element.target.value)}
+              placeholder={
+                progress === "started" ? "Insira sua resposta" : "Insira o tema que deseja estudar..."
+              }
+            />
+            <button onClick={handleSubmitChat}>{progress === "pending" ? "Enviar perguta" : "Enviar Resposta"}</button>
+          </div>
         )}
-      
+
         <footer className="box-footer">
           <p>teach<span>.me</span></p>
         </footer>
